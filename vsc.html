@@ -1,0 +1,513 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="Content-Type" content="text/html">
+<style>
+#info{
+	float:left;
+}
+#qlink{
+    line-height:30px;
+    background-color:#ccffcc;
+    width:20em;
+    float:left;
+    margin-left: 1em;
+    padding:5px;
+}
+#qlink>a{
+	word-break:break-all;
+}
+INPUT.style1 {
+	FONT-SIZE: 8pt; HEIGHT: 12pt
+}
+.right {
+	TEXT-ALIGN: right
+}
+.ro_right {
+	BACKGROUND: #cccccc; TEXT-ALIGN: right; margin-right:1em;
+}
+
+SELECT{
+	FONT-SIZE: 13pt;
+}
+SELECT.right{
+	TEXT-ALIGN: right; margin-right:1em;
+}
+</style>
+
+<script language="JavaScript">
+
+function Item(name, defence, protection) {
+	return {"name":name, "defence":defence, "protection":protection};
+}
+
+function Option(name, values) {
+	return {"name":name, "values":values}
+}
+
+var SrcStatus = {};
+var QLink = "";
+var Url = "";
+
+var NecklaceArray = [
+	Item("None", 0, 0),
+	Item("Boomerang", 1, 0),
+	Item("Skull", 2, 0),
+	Item("Cuspid", 3, 1),
+	Item("Jet", 4, 1),
+	Item("Idol", 5, 2),
+	Item("Anti-Cross", 6, 2),
+	Item("Death-Star", 7, 3),
+	Item("Amulet of Omen", 8, 3),
+	Item("Black Ankh", 9, 4),
+	Item("Wing of the Dead", 10, 4),
+	Item("Evil Eye", 11, 5),
+	Item("Fefnir", 12, 6),
+];
+
+var EaringArray = [
+	Item("None", 0, 0),
+	Item("Bronze", 3, 1),
+	Item("Silver", 4, 1),
+	Item("Gold", 5, 2),
+	Item("Death Sun", 6, 2),
+	Item("Bat's Circle", 7, 3),
+	Item("Shield of Darkness", 8, 3),
+	Item("Bloody Feast", 10, 5),
+	Item("Eternal of Life", 11, 5),
+	Item("The Cat's Eyes", 12, 7),
+	Item("Skull of Destruction", 13, 7),
+	Item("The Oath of Harmony", 14, 9),
+	Item("Hyacinth", 15, 10),	
+];
+
+var BraceletArray = [
+	Item("None", 0, 0),
+	Item("Lace Bracelet", 1, 0),
+	Item("Armorial Bracelet", 2, 1),
+	Item("Jewel Bracelet", 3, 1),
+	Item("Master Bracelet", 4, 2),
+	Item("Morganite Bracelet", 5, 2),
+	Item("Blue Monoeye", 6, 3),
+	Item("Blue Water", 7, 3),
+	Item("Viper Bracelet", 8, 4),
+	Item("the Abyss", 9, 4),
+	Item("Keen Bracelet", 10, 5),
+	Item("Lapis Lazuli", 11, 6),
+];
+
+var RingArray = [
+	Item("None", 0, 0),
+	Item("Iron", 1, 0),
+	Item("Silver", 2, 0),
+	Item("Winkle", 3, 1),
+	Item("Gilt", 4, 1),
+	Item("Anti-Sun", 5, 2),
+	Item("Blue Seduction", 6, 2),
+	Item("Blood Sucker", 7, 3),
+	Item("Unholy Shield", 8, 3),
+	Item("Ring of Skulls", 9, 4),
+	Item("Spider Eyes", 10, 4),
+	Item("Fenrir", 11, 5),
+	Item("Asp", 12, 6),
+];
+
+var OrbArray = [
+	Item("None", 0, 0),
+	Item("Rad", 0, 0),
+	Item("Ken", 1, 0),
+	Item("Eolh", 2, 0),
+	Item("Ing", 3, 0),
+	Item("Jera", 1, 1),
+	Item("Man", 2, 1),
+	Item("Othel", 3, 1),
+	Item("Bu Man", 2, 2),
+	Item("Odal", 3, 2),
+	Item("Daeg", 3, 3),
+	Item("Is", 4, 3),
+];
+
+var OptionArray = [
+Option("None", [0]),
+Option("All Attributes", [1, 2, 3]),
+Option("All Resistance", [1, 3, 5, 7, 9]),
+Option("Curse Resistance", [5,10,15]),
+Option("Blood Resistance", [5,10,15]),
+Option("Acid Resistance", [5,10,15]),
+Option("Poison Resistance", [5,10,15]),
+Option("Str", [1, 2, 3, 4, 5]),
+Option("Dex", [1, 2, 3, 4, 5]),
+Option("Int", [1, 2, 3, 4, 5]),
+Option("HP Steal", [1, 2, 3]),
+Option("Damange", [1, 2, 3, 4, 5]),
+Option("ToHit", [1, 2, 3, 4, 5]),
+Option("Critical Hit", []),
+Option("Defence", [1, 2, 3, 4, 5]),
+Option("Protection", [1, 2, 3, 4, 5]),
+Option("Attack Speed", [5,10,15,20,25]),
+Option("Luck", [1, 2, 3]),
+Option("Vision", [1,2,3]),
+Option("HP", [3,6,9,12,15]),
+];
+
+function setupWidgts() {
+	setupSelect( N("Necklace1"), NecklaceArray );
+	setupSelect( N("Earing1"), EaringArray );
+	setupSelect( N("Earing2"), EaringArray );
+	setupSelect( N("Bracelet1"), BraceletArray );
+	setupSelect( N("Bracelet2"), BraceletArray );
+	setupSelect( N("Ring1"), RingArray );
+	setupSelect( N("Ring2"), RingArray );
+	setupSelect( N("Ring3"), RingArray );
+	setupSelect( N("Ring4"), RingArray );
+	setupSelect( N("Orb1"), OrbArray );
+	setupSelect( N("Orb2"), OrbArray );
+	setupSelect( N("Orb3"), OrbArray );
+	setupSelect( N("Orb4"), OrbArray );
+
+	var o = document.getElementsByName("Option");
+	for (var i = 0; i < o.length; i++) {
+		setupOption(o[i], OptionArray);
+	}
+}
+
+function setupSelect(s, list) {
+	s.options.length = list.length;
+	s.itemArray = list;
+	for (var i = 0; i < list.length; i++) {
+		s.options[i].text = list[i].name;
+	}
+}
+
+function setupOption(o, list) {
+	setupSelect(o, list);
+	setupValues(o.nextSibling, [0]);
+}
+
+function setupValues(v, list) {
+	v.options.length = list.length;
+	for (var i = 0; i < list.length; i++) {
+		v.options[i].text = itos(list[i]);
+	}
+}
+
+function initStatus() {
+	SrcStatus = {};
+
+	for (var i = 0; i < OptionArray.length; i++) {
+		SrcStatus[OptionArray[i].name] = 0;
+	}
+
+	SrcStatus.Str = 20;
+	SrcStatus.Dex = 20;
+	SrcStatus.Int = 20;
+	SrcStatus['MaxDmg'] = 5;
+	SrcStatus['MinDmg'] = 3;
+}
+
+function calcStatus() {
+	
+	var o = document.getElementsByName("Option");
+	for (var i = 0; i < o.length; i++) {
+		var s = o[i];
+		var v = s.nextSibling;
+		SrcStatus[s.options[s.selectedIndex].text] += parseInt(v.options[v.selectedIndex].text);
+	}
+
+	calcArmor('Necklace1');
+	calcArmor('Earing1');
+	calcArmor('Earing2');
+	calcArmor('Bracelet1');
+	calcArmor('Bracelet2');
+	calcArmor('Ring1');
+	calcArmor('Ring2');
+	calcArmor('Ring3');
+	calcArmor('Ring4');
+	calcArmor('Orb1');
+	calcArmor('Orb2');
+	calcArmor('Orb3');
+	calcArmor('Orb4');
+
+	var t = SrcStatus['All Attributes'];
+	SrcStatus.Str += t;
+	SrcStatus.Dex += t;
+	SrcStatus.Int += t;
+
+	t = SrcStatus['All Resistance'];
+	SrcStatus['Curse Resistance'] += t;
+	SrcStatus['Blood Resistance'] += t;
+	SrcStatus['Acid Resistance'] += t;
+	SrcStatus['Poison Resistance'] += t;
+}
+
+function updateStatus() {
+	initStatus();
+	calcStatus();
+	for (var key in SrcStatus) {
+		var i = N(key);
+		if (i) N(key).value = itos(SrcStatus[key]);
+	}
+
+	calcQLink();
+	var l = Url + '?c=' + QLink;
+	var a = N('aLink');
+	a.href = l;
+	a.text = l;
+}
+
+function calcArmor(name) {
+	var s = N(name);
+	SrcStatus.Defence += s.itemArray[s.selectedIndex].defence;
+	SrcStatus.Protection += s.itemArray[s.selectedIndex].protection;
+}
+
+function calcQLink() {
+	QLink = "";
+	addItemToQLink('Necklace1');
+	addItemToQLink('Earing1');
+	addItemToQLink('Earing2');
+	addItemToQLink('Bracelet1');
+	addItemToQLink('Bracelet2');
+	addItemToQLink('Ring1');
+	addItemToQLink('Ring2');
+	addItemToQLink('Ring3');
+	addItemToQLink('Ring4');
+	addItemToQLink('Orb1');
+	addItemToQLink('Orb2');
+	addItemToQLink('Orb3');
+	addItemToQLink('Orb4');
+
+	var o = document.getElementsByName("Option");
+	for (var i = 0; i < o.length; i++) {
+		var s = o[i];
+		var v = s.nextSibling;
+		QLink += String.fromCharCode(s.selectedIndex+65);
+		QLink += String.fromCharCode(v.selectedIndex+65);
+	}
+}
+
+function addItemToQLink(name) {
+	var s = N(name);
+	QLink += String.fromCharCode(s.selectedIndex+65);
+}
+
+function loadQLink() {
+	var t = document.URL.search("c=");
+	var l = "";
+	if (t > 1) l = document.URL.substr(t+2);
+	else return;
+
+	t = 0;
+	loadItemFromCh('Necklace1', l[t++]);
+	loadItemFromCh('Earing1', l[t++]);
+	loadItemFromCh('Earing2', l[t++]);
+	loadItemFromCh('Bracelet1', l[t++]);
+	loadItemFromCh('Bracelet2', l[t++]);
+	loadItemFromCh('Ring1', l[t++]);
+	loadItemFromCh('Ring2', l[t++]);
+	loadItemFromCh('Ring3', l[t++]);
+	loadItemFromCh('Ring4', l[t++]);
+	loadItemFromCh('Orb1', l[t++]);
+	loadItemFromCh('Orb2', l[t++]);
+	loadItemFromCh('Orb3', l[t++]);
+	loadItemFromCh('Orb4', l[t++]);
+
+	var o = document.getElementsByName("Option");
+	for (var i = 0; i < o.length; i++) {
+		var s = o[i];
+		selectValueFromCh(s, l[t++]);
+		setupValues(s.nextSibling, OptionArray[s.selectedIndex].values);		
+		selectValueFromCh(s.nextSibling, l[t++]);
+	}	
+}
+
+function loadItemFromCh(name, c) {
+	if (!c) c = 'A';
+	selectItem(name, c.charCodeAt()-65);
+}
+
+function selectItem(name, idx) {
+	var s = N(name);
+	s.selectedIndex = Math.max(idx,0);
+}
+
+function selectValueFromCh(s, c) {
+	if (!c) c='A';
+	s.selectedIndex = Math.max(0, c.charCodeAt()-65);
+}
+
+function onOptionChange(o) {
+	setupValues(o.nextSibling, OptionArray[o.selectedIndex].values);
+	updateStatus();
+}
+
+function onValueChange() {
+	updateStatus();
+}
+
+function onItemChange() {
+	updateStatus();
+}
+
+function N(name) {
+	return document.getElementsByName(name)[0];
+}
+
+function itos(i) {
+	var n = new Number(i);
+	return n.toString();
+}
+
+function chkbrowser(){
+  if(document.layers) return "NN";
+  if(document.all) return "IE";
+}
+
+function init(){
+	setupWidgts();
+	loadQLink();
+
+	Url = document.URL;
+	var t = Url.search('.html');
+	if (t>1) Url = Url.substr(0,t+5);
+	else Url = 'https://darkeden-info.github.io/vsc.html';
+
+	updateStatus();
+}
+
+//var browser = chkbrowser();
+
+</script>
+
+<meta content="MSHTML 6.00.2600.0" name="GENERATOR">
+<title>Status Calculator</title></head>
+<body onload="init()">
+<div id="info">
+<div style="BACKGROUND: #cccc99" align="center">Status Calculator</div>
+<div style="BACKGROUND: #eeeeee">
+<br>
+<table>
+  <tbody>
+  <tr>
+    <td> STR</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Str"> </td>
+    <td> DEX</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Dex"> </td>
+    <td> INT</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Int"> </td>
+  </tr>
+  <tr>
+    <td> Defence</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Defence"> </td>
+    <td> Protection</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Protection"> </td>
+    <td> HP</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="HP"> </td>
+  </tr>
+  <tr>
+  	<td>Min Dmg</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="MinDmg"> </td>
+    <td>Max Dmg</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="MaxDmg"> </td>
+    <td>Critical&nbsp;Hit</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Critical Hit"> </td>
+  </tr>
+  <tr>
+    <td> ToHit</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="ToHit"> </td>
+    <td> Speed</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Attack Speed"> </td>    
+	<td> HP&nbsp;Steal</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="HP Steal"> </td>    
+  </tr>  
+  <tr>
+    <td> Curse&nbsp;Resi</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Curse Resistance"> </td>
+    <td> Blood&nbsp;Resi</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Blood Resistance"> </td>
+    <td> Acid&nbsp;Resi</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Acid Resistance"> </td>
+  </tr>   
+  <tr>
+    <td> Poison&nbsp;Resi</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Poison Resistance"> </td>
+    <td> Luck</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Luck"> </td>
+    <td> Vision</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Vision"> </td>
+  </tr>
+  </tbody>
+</table>
+<br>
+
+<table>
+	<tbody>
+	<tr>
+	  <td>Necklace</td>
+	  <td><select name="Necklace1" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Earing</td>
+	  <td><select name="Earing1" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Earing</td>
+	  <td><select name="Earing2" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Bracelet</td>
+	  <td><select name="Bracelet1" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>	
+	<tr>
+	  <td>Bracelet</td>
+	  <td><select name="Bracelet2" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Ring</td>
+	  <td><select name="Ring1" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Ring</td>
+	  <td><select name="Ring2" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Ring</td>
+	  <td><select name="Ring3" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Ring</td>
+	  <td><select name="Ring4" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Orb</td>
+	  <td><select name="Orb1" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Orb</td>
+	  <td><select name="Orb2" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Orb</td>
+	  <td><select name="Orb3" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr>
+	  <td>Orb</td>
+	  <td><select name="Orb4" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>	
+	</tbody>
+</table>
+</div></div>
+
+<div id="qlink">
+	<p>Quick Link:</p>
+	<a name="aLink"></a>
+</div>
+</body>
+</html>
