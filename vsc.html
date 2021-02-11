@@ -5,15 +5,15 @@
 #info{
 	float:left;
 }
-#qlink{
+.link-div{
     line-height:30px;
     background-color:#ccffcc;
     width:20em;
     float:left;
-    margin-left: 1em;
+    margin: 5px;
     padding:5px;
 }
-#qlink>a{
+.link-div>a{
 	word-break:break-all;
 }
 INPUT.style1 {
@@ -31,6 +31,16 @@ SELECT{
 }
 SELECT.right{
 	TEXT-ALIGN: right; margin-right:1em;
+}
+
+TR.gray{
+	background-color:#d2eae4;
+}
+TR.gray SELECT{
+	background-color:#e0ece3;
+}
+TR.white{
+	background-color:#ffffff;	
 }
 </style>
 
@@ -479,91 +489,91 @@ function init(){
 
 <table>
 	<tbody>
-	<tr>
+	<tr class="gray">
 	  <td>Necklace</td>
 	  <td><select name="Necklace1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Earing</td>
 	  <td><select name="Earing1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Earing</td>
 	  <td><select name="Earing2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>	
-	<tr>
+	<tr class="gray">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Ring</td>
 	  <td><select name="Ring1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Ring</td>
 	  <td><select name="Ring3" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring4" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Orb</td>
 	  <td><select name="Orb2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb3" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Orb</td>
 	  <td><select name="Orb4" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Armor</td>
 	  <td><select name="Armor" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Weapon</td>
 	  <td><select name="Weapon" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
@@ -573,9 +583,21 @@ function init(){
 </table>
 </div></div>
 
-<div id="qlink">
+<div class="link-div">
 	<p>Quick Link:</p>
 	<a name="aLink"></a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">str aa set</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?c=GGGGGGGGGDDDDGJBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCKC">aa moju set</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?c=GGGGGGGGGDDDDGJLECELECELECELECELECELECELECELECELECELECELECELECELECELECELEAA">moju dmg set</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">aa dmg set</a>
 </div>
 </body>
 </html>
