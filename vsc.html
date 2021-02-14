@@ -2,12 +2,12 @@
 
 <meta http-equiv="Content-Type" content="text/html">
 <style>
-#info{
+.l-div{
 	float:left;
 }
 .link-div{
     line-height:30px;
-    background-color:#ccffcc;
+    background-color:#eeeeee;
     width:20em;
     float:left;
     margin: 5px;
@@ -34,13 +34,23 @@ SELECT.right{
 }
 
 TR.gray{
-	background-color:#d2eae4;
+	background-color:#dffff3;
+	color:#000;
 }
 TR.gray SELECT{
-	background-color:#e0ece3;
+	background-color:#dffff3;
+	color:#000;
 }
 TR.white{
-	background-color:#ffffff;	
+	background-color:#ffffff;
+	color:#000;	
+}
+TR.white SELECT{
+	color:#000;
+}
+TR.l-tr{
+	height: 5px;
+	empty-cells:show;
 }
 </style>
 
@@ -447,7 +457,7 @@ function init(){
 <meta content="MSHTML 6.00.2600.0" name="GENERATOR">
 <title>Status Calculator</title></head>
 <body onload="init()">
-<div id="info">
+<div class="l-div">
 <div style="BACKGROUND: #cccc99" align="center">Status Calculator</div>
 <div style="BACKGROUND: #eeeeee">
 <br>
@@ -485,17 +495,18 @@ function init(){
   </tr>
   </tbody>
 </table>
+</div><div>
 <br>
-
 <table>
 	<tbody>
-	<tr class="gray">
+	<tr class="white">
 	  <td>Necklace</td>
 	  <td><select name="Necklace1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="white">
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
 	  <td>Earing</td>
 	  <td><select name="Earing1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
@@ -507,19 +518,21 @@ function init(){
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
+	<tr class="l-tr"><td></td></tr>
 	<tr class="white">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>	
-	<tr class="gray">
+	<tr class="white">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="white">
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
@@ -531,7 +544,7 @@ function init(){
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="white">
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring3" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
@@ -543,13 +556,14 @@ function init(){
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
+	<tr class="l-tr"><td></td></tr>
 	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="gray">
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
@@ -561,13 +575,14 @@ function init(){
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="gray">
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb4" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr class="white">
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
 	  <td>Armor</td>
 	  <td><select name="Armor" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
