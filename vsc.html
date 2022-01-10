@@ -34,7 +34,9 @@ INPUT.style1 {
 .ro_right {
 	background-color:#000; TEXT-ALIGN:right; margin-right:1em; color:#eee;
 }
-
+.nrl_td {
+	background-color:#000; TEXT-ALIGN:right; color:#eee;	
+}
 SELECT{
 	FONT-SIZE: 13pt;
 }
@@ -80,6 +82,7 @@ function Weapon(name, min, max, speed) {
 	return {"name":name, "min":min, "max":max, "speed":speed};
 }
 
+var BaseStatus = {};
 var SrcStatus = {};
 var QLink = "";
 var Url = "";
@@ -268,6 +271,9 @@ function initStatus() {
 		SrcStatus[OptionArray[i].name] = 0;
 	}
 
+	SrcStatus.RealStr = 20;
+	SrcStatus.RealDex = 20;
+	SrcStatus.RealInt = 20;
 	SrcStatus.Str = 0;
 	SrcStatus.Dex = 0;
 	SrcStatus.Int = 0;
@@ -300,6 +306,12 @@ function calcStatus() {
 	calcArmor('Armor');
 	calcWeapon('Weapon');
 
+	SrcStatus.Level = BaseStatus.Level;
+	SrcStatus.PointLeft = BaseStatus.PointLeft;
+	SrcStatus.BaseStr = BaseStatus.BaseStr;
+	SrcStatus.BaseDex = BaseStatus.BaseDex;
+	SrcStatus.BaseInt = BaseStatus.BaseInt;
+
 	var t = SrcStatus['All Attributes'];
 	SrcStatus.Str += t;
 	SrcStatus.Dex += t;
@@ -314,6 +326,98 @@ function calcStatus() {
 	t = SrcStatus['Damange'];
 	SrcStatus['MaxDmg'] += t;
 	SrcStatus['MinDmg'] += t;
+
+	calcStatusEx();
+}
+
+function calcStatusEx() {
+	SrcStatus.RealStr = SrcStatus.BaseStr + SrcStatus.Str;
+	SrcStatus.RealDex = SrcStatus.BaseDex + SrcStatus.Dex;
+	SrcStatus.RealInt = SrcStatus.BaseInt + SrcStatus.Int;
+
+	SrcStatus.HP += SrcStatus.RealStr * 2 + SrcStatus.RealDex + SrcStatus.RealInt + SrcStatus.Level;
+	SrcStatus.ToHit += SrcStatus.RealDex + Math.floor(SrcStatus.Level / 2.5);
+	SrcStatus.Defence += Math.floor(SrcStatus.RealDex / 2) + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.Protection += SrcStatus.RealStr + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.MinDmg += Math.floor(SrcStatus.RealStr / 6) + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.MaxDmg += Math.floor(SrcStatus.RealStr / 4) + Math.floor(SrcStatus.Level / 5);
+
+	SrcStatus['Attack Speed'] += Math.min( Math.floor(SrcStatus.RealDex / 10) + 10, 30 );
+	SrcStatus['Critical Hit'] += Math.floor((SrcStatus.RealDex - 20) / 30);
+}
+
+function levelAdd(i) {
+	BaseStatus.Level = Math.min(BaseStatus.Level + i, 150);
+	BaseStatus.PointLeft = (BaseStatus.Level - 1) * 3;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
+	updateStatus();	
+}
+
+function levelSub(i) {
+	BaseStatus.Level = Math.max(BaseStatus.Level - i, 1);
+	BaseStatus.PointLeft = (BaseStatus.Level - 1) * 3;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
+	updateStatus();	
+}
+
+function strAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft -= i;
+	BaseStatus.BaseStr += i;
+
+	updateStatus();	
+}
+
+function strSub(i) {
+	if (BaseStatus.BaseStr - i < 20) i = BaseStatus.BaseStr - 20;
+
+	BaseStatus.PointLeft += i;
+	BaseStatus.BaseStr -= i;
+
+	updateStatus();	
+}
+
+function dexAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft -= i;
+	BaseStatus.BaseDex += i;
+
+	updateStatus();	
+}
+
+function dexSub(i) {
+	if (BaseStatus.BaseDex - i < 20) i = BaseStatus.BaseDex - 20;
+
+	BaseStatus.PointLeft+=i;
+	BaseStatus.BaseDex-=i;
+
+	updateStatus();	
+}
+
+function intAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft-=i;
+	BaseStatus.BaseInt+=i;
+
+	updateStatus();	
+}
+
+function intSub(i) {
+	if (BaseStatus.BaseInt - i < 20) i = BaseStatus.BaseInt - 20;
+
+	BaseStatus.PointLeft+=i;
+	BaseStatus.BaseInt-=i;
+
+	updateStatus();	
 }
 
 function updateStatus() {
@@ -325,7 +429,13 @@ function updateStatus() {
 	}
 
 	calcQLink();
-	var l = Url + '?c=' + QLink;
+	var l = Url + '?';
+	l += "lv=" + itos(BaseStatus.Level);
+	l += "pl=" + itos(BaseStatus.PointLeft);
+	l += "s=" + itos(BaseStatus.BaseStr);
+	l += "d=" + itos(BaseStatus.BaseDex);
+	l += "i=" + itos(BaseStatus.BaseInt);
+	l += "c=" + QLink;
 	var a = N('aLink');
 	a.href = l;
 	a.text = l;
@@ -377,6 +487,21 @@ function addItemToQLink(name) {
 }
 
 function loadQLink() {
+	var i = document.URL.search("lv=");
+	if (i > 1) BaseStatus.Level = parseInt(document.URL.substr(i+3));
+
+	i = document.URL.search("pl=");
+	if (i > 1) BaseStatus.PointLeft = parseInt(document.URL.substr(i+3));
+
+	i = document.URL.search("s=");
+	if (i > 1) BaseStatus.BaseStr = parseInt(document.URL.substr(i+2));
+
+	i = document.URL.search("d=");
+	if (i > 1) BaseStatus.BaseDex = parseInt(document.URL.substr(i+2));
+
+	i = document.URL.search("i=");
+	if (i > 1) BaseStatus.BaseInt = parseInt(document.URL.substr(i+2));
+
 	var t = document.URL.search("c=");
 	var l = "";
 	if (t > 1) l = document.URL.substr(t+2);
@@ -451,6 +576,12 @@ function chkbrowser(){
 }
 
 function init(){
+	BaseStatus.Level = 1;
+	BaseStatus.PointLeft = 0;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
 	setupWidgts();
 	loadQLink();
 
@@ -476,10 +607,50 @@ function init(){
 <table>
   <tbody>
   <tr>
+    <td>Level</td><td> <input class="nrl_td" maxlength="3" size="2" value="1" name="Level"> </td>
+    <td><input type="button" value=" +1 " onclick="levelAdd(1)"></td><td><input type="button" value=" -1 " onclick="levelSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="levelAdd(10)"></td><td><input type="button" value=" -10 " onclick="levelSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="levelAdd(100)"></td><td><input type="button" value=" -100 " onclick="levelSub(100)"></td>
+    <td>Points left</td><td> <input class="nrl_td" readonly="" maxlength="3" size="4" value="0" name="PointLeft"> </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr>
+    <td>STR</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseStr"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealStr"> </td>
+    <td><input type="button" value=" +1 " onclick="strAdd(1)"></td><td><input type="button" value=" -1 " onclick="strSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="strAdd(10)"></td><td><input type="button" value=" -10 " onclick="strSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="strAdd(100)"></td><td><input type="button" value=" -100 " onclick="strSub(100)"></td>
+  </tr>
+  <tr>
+  	<td>DEX</td>
+  	<td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseDex"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealDex"> </td>
+    <td><input type="button" value=" +1 " onclick="dexAdd(1)"></td><td><input type="button" value=" -1 " onclick="dexSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="dexAdd(10)"></td><td><input type="button" value=" -10 " onclick="dexSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="dexAdd(100)"></td><td><input type="button" value=" -100 " onclick="dexSub(100)"></td>
+  </tr>
+  <tr>
+  	<td>INT</td>
+  	<td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseInt"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealInt"> </td>
+    <td><input type="button" value=" +1 " onclick="intAdd(1)"></td><td><input type="button" value=" -1 " onclick="intSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="intAdd(10)"></td><td><input type="button" value=" -10 " onclick="intSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="intAdd(100)"></td><td><input type="button" value=" -100 " onclick="intSub(100)"></td>
+  </tr>  
+  </tbody>
+</table>
+<br>
+<table>
+  <tbody>
+<!--   <tr>
     <td> STR</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Str"> </td>
     <td> DEX</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Dex"> </td>
     <td> INT</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Int"> </td>
-  </tr>
+  </tr> -->
   <tr>
     <td> Defence</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Defence"> </td>
     <td> Protection</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Protection"> </td>
@@ -615,22 +786,22 @@ function init(){
 	<a name="aLink"></a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">str aa set</a>
+	<a href="vsc.html?lv=150pl=0s=117d=195i=195c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">average vamp</a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCKC">aa moju set</a>
+	<a href="vsc.html?lv=150pl=0s=137d=195i=175c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">meteor vamp</a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJBCCEBCCEBCCEBCCEBCCEBCCEBCHEBCHEDCCEDCCEKCCEKCCEKCCEBCHEBCKC">mix aa moju set 1</a>
+	<a href="vsc.html?lv=150pl=0s=137d=195i=175c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">hybird vamp</a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJDCCEDCCEDCCEDCCEDCCEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">mix aa moju set 2</a>
+	<a href="vsc.html?lv=150pl=0s=20d=467i=20c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">dex vamp</a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJLECELECELECELECELECELECELECELECELECELECELECELECELECELECELEAA">moju dmg set</a>
+	<a href="vsc.html?lv=150pl=0s=87d=210i=210c=GGGGGGGGGDDDDGJDCCEDCCEKCCEKCCEKCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCKC">int dex vamp</a>
 </div>
 <div class="link-div">
-	<a href="vsc.html?c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">aa dmg set</a>
+	<a href="vsc.html?lv=150pl=0s=117d=195i=195c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCKCBCKCBCKCBCDCBCDCBCDCBCDCBCDCBCDCBCDCBCDCBCKC">Raohm set</a>
 </div>
 </body>
 </html>
