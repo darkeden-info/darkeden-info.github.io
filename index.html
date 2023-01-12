@@ -2,19 +2,28 @@
 
 <meta http-equiv="Content-Type" content="text/html">
 <style>
-#info{
-	float:left;
+body{background-color:#202225;color:#e7e9eb;}
+.t-div{
+	background-color:#202225;color:#e7e9eb;
+	text-align: center;
+	padding: 10px 0px;
+	border-bottom: medium #000;
 }
-#qlink{
+.l-div{
+	float:left;
+	background-color:#2f3136;
+}
+.link-div{
     line-height:30px;
-    background-color:#ccffcc;
+    background-color:#27292d;
     width:20em;
     float:left;
-    margin-left: 1em;
+    margin: 0px 5px 5px 5px;
     padding:5px;
 }
-#qlink>a{
+.link-div>a{
 	word-break:break-all;
+	color:#989fa7;
 }
 INPUT.style1 {
 	FONT-SIZE: 8pt; HEIGHT: 12pt
@@ -23,14 +32,39 @@ INPUT.style1 {
 	TEXT-ALIGN: right
 }
 .ro_right {
-	BACKGROUND: #cccccc; TEXT-ALIGN: right; margin-right:1em;
+	background-color:#000; TEXT-ALIGN:right; margin-right:1em; color:#eee;
 }
-
+.nrl_td {
+	background-color:#000; TEXT-ALIGN:right; color:#eee;	
+}
 SELECT{
 	FONT-SIZE: 13pt;
 }
 SELECT.right{
 	TEXT-ALIGN: right; margin-right:1em;
+}
+
+TR.gray{
+	background-color:#2f3136;
+	color:#989fa7;
+}
+TR.gray SELECT{
+	background-color:#232327;
+	color:#eee;
+	border:thin none #000;
+}
+TR.white{
+	background-color:#2f3136;
+	color:#989fa7;
+}
+TR.white SELECT{
+	background-color:#232327;
+	color:#eee;
+	border:thin none #000;
+}
+TR.l-tr{
+	height: 5px;
+	empty-cells:show;
 }
 </style>
 
@@ -44,6 +78,11 @@ function Option(name, values) {
 	return {"name":name, "values":values}
 }
 
+function Weapon(name, min, max, speed) {
+	return {"name":name, "min":min, "max":max, "speed":speed};
+}
+
+var BaseStatus = {};
 var SrcStatus = {};
 var QLink = "";
 var Url = "";
@@ -126,6 +165,39 @@ var OrbArray = [
 	Item("Is", 4, 3),
 ];
 
+var ArmorArray = [
+	Item("None", 0, 0),
+	Item("Swing/Body", 10, 5),
+	Item("Frock/Jump", 20, 10),
+	Item("Slipery/Plume", 30, 15),
+	Item("Hidding/Levitated", 40, 20),
+	Item("Anti-Sun", 50, 25),
+	Item("Master", 60, 30),
+	Item("Blood", 70, 35),
+	Item("Lorica", 80, 40),
+];
+
+var WeaponArray = [
+	Weapon("None", 0, 0, 0),
+	Weapon("Knuckle part",	1, 3, 30),
+	Weapon("Thumb Grab",	1, 4, 30),
+	Weapon("Force Knuckle",	1, 5, 30),
+	Weapon("Ring Knuckle",	1, 6, 30),
+	Weapon("yeti's craw",	1, 7, 35),
+	Weapon("Cat's craw",	2, 8, 30),
+	Weapon("Sif'S Hand",	3, 13, 35),
+	Weapon("Fist Knuckle",	4, 9, 25),
+	Weapon("APE Knuckle",	4, 10, 25),
+	Weapon("SAV Knuckle",	4, 11, 30),
+	Weapon("Loon diver",	4, 13, 35),
+	Weapon("Might Knuckle",	5, 13, 30),
+	Weapon("Zamadar",	7, 14, 30),
+	Weapon("Katar",		8, 15, 30),
+	Weapon("Amemet'S CRAW",	10, 15,	30),
+	Weapon("Zagan",		12, 17, 25),
+	Weapon("Bag kahs",	5, 20, 30),
+];
+
 var OptionArray = [
 Option("None", [0]),
 Option("All Attributes", [1, 2, 3]),
@@ -163,6 +235,8 @@ function setupWidgts() {
 	setupSelect( N("Orb2"), OrbArray );
 	setupSelect( N("Orb3"), OrbArray );
 	setupSelect( N("Orb4"), OrbArray );
+	setupSelect( N("Armor"), ArmorArray );
+	setupSelect( N("Weapon"), WeaponArray );
 
 	var o = document.getElementsByName("Option");
 	for (var i = 0; i < o.length; i++) {
@@ -197,11 +271,14 @@ function initStatus() {
 		SrcStatus[OptionArray[i].name] = 0;
 	}
 
-	SrcStatus.Str = 20;
-	SrcStatus.Dex = 20;
-	SrcStatus.Int = 20;
-	SrcStatus['MaxDmg'] = 5;
-	SrcStatus['MinDmg'] = 3;
+	SrcStatus.RealStr = 20;
+	SrcStatus.RealDex = 20;
+	SrcStatus.RealInt = 20;
+	SrcStatus.Str = 0;
+	SrcStatus.Dex = 0;
+	SrcStatus.Int = 0;
+	SrcStatus['MaxDmg'] = 0;
+	SrcStatus['MinDmg'] = 0;
 }
 
 function calcStatus() {
@@ -226,6 +303,14 @@ function calcStatus() {
 	calcArmor('Orb2');
 	calcArmor('Orb3');
 	calcArmor('Orb4');
+	calcArmor('Armor');
+	calcWeapon('Weapon');
+
+	SrcStatus.Level = BaseStatus.Level;
+	SrcStatus.PointLeft = BaseStatus.PointLeft;
+	SrcStatus.BaseStr = BaseStatus.BaseStr;
+	SrcStatus.BaseDex = BaseStatus.BaseDex;
+	SrcStatus.BaseInt = BaseStatus.BaseInt;
 
 	var t = SrcStatus['All Attributes'];
 	SrcStatus.Str += t;
@@ -237,6 +322,102 @@ function calcStatus() {
 	SrcStatus['Blood Resistance'] += t;
 	SrcStatus['Acid Resistance'] += t;
 	SrcStatus['Poison Resistance'] += t;
+
+	t = SrcStatus['Damange'];
+	SrcStatus['MaxDmg'] += t;
+	SrcStatus['MinDmg'] += t;
+
+	calcStatusEx();
+}
+
+function calcStatusEx() {
+	SrcStatus.RealStr = SrcStatus.BaseStr + SrcStatus.Str;
+	SrcStatus.RealDex = SrcStatus.BaseDex + SrcStatus.Dex;
+	SrcStatus.RealInt = SrcStatus.BaseInt + SrcStatus.Int;
+
+	SrcStatus.HP += SrcStatus.RealStr * 2 + SrcStatus.RealDex + SrcStatus.RealInt + SrcStatus.Level;
+	SrcStatus.ToHit += SrcStatus.RealDex + Math.floor(SrcStatus.Level / 2.5);
+	SrcStatus.Defence += Math.floor(SrcStatus.RealDex / 2) + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.Protection += SrcStatus.RealStr + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.MinDmg += Math.floor(SrcStatus.RealStr / 6) + Math.floor(SrcStatus.Level / 5);
+	SrcStatus.MaxDmg += Math.floor(SrcStatus.RealStr / 4) + Math.floor(SrcStatus.Level / 5);
+
+	SrcStatus['Attack Speed'] += Math.min( Math.floor(SrcStatus.RealDex / 10) + 10, 30 );
+	SrcStatus['Critical Hit'] += Math.floor((SrcStatus.RealDex - 20) / 30);
+}
+
+function levelAdd(i) {
+	BaseStatus.Level = Math.min(BaseStatus.Level + i, 150);
+	BaseStatus.PointLeft = (BaseStatus.Level - 1) * 3;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
+	updateStatus();	
+}
+
+function levelSub(i) {
+	BaseStatus.Level = Math.max(BaseStatus.Level - i, 1);
+	BaseStatus.PointLeft = (BaseStatus.Level - 1) * 3;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
+	updateStatus();	
+}
+
+function strAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft -= i;
+	BaseStatus.BaseStr += i;
+
+	updateStatus();	
+}
+
+function strSub(i) {
+	if (BaseStatus.BaseStr - i < 20) i = BaseStatus.BaseStr - 20;
+
+	BaseStatus.PointLeft += i;
+	BaseStatus.BaseStr -= i;
+
+	updateStatus();	
+}
+
+function dexAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft -= i;
+	BaseStatus.BaseDex += i;
+
+	updateStatus();	
+}
+
+function dexSub(i) {
+	if (BaseStatus.BaseDex - i < 20) i = BaseStatus.BaseDex - 20;
+
+	BaseStatus.PointLeft+=i;
+	BaseStatus.BaseDex-=i;
+
+	updateStatus();	
+}
+
+function intAdd(i) {
+	if (BaseStatus.PointLeft < i) i = BaseStatus.PointLeft;
+
+	BaseStatus.PointLeft-=i;
+	BaseStatus.BaseInt+=i;
+
+	updateStatus();	
+}
+
+function intSub(i) {
+	if (BaseStatus.BaseInt - i < 20) i = BaseStatus.BaseInt - 20;
+
+	BaseStatus.PointLeft+=i;
+	BaseStatus.BaseInt-=i;
+
+	updateStatus();	
 }
 
 function updateStatus() {
@@ -248,7 +429,13 @@ function updateStatus() {
 	}
 
 	calcQLink();
-	var l = Url + '?c=' + QLink;
+	var l = Url + '?';
+	l += "lv=" + itos(BaseStatus.Level);
+	l += "pl=" + itos(BaseStatus.PointLeft);
+	l += "s=" + itos(BaseStatus.BaseStr);
+	l += "d=" + itos(BaseStatus.BaseDex);
+	l += "i=" + itos(BaseStatus.BaseInt);
+	l += "c=" + QLink;
 	var a = N('aLink');
 	a.href = l;
 	a.text = l;
@@ -258,6 +445,13 @@ function calcArmor(name) {
 	var s = N(name);
 	SrcStatus.Defence += s.itemArray[s.selectedIndex].defence;
 	SrcStatus.Protection += s.itemArray[s.selectedIndex].protection;
+}
+
+function calcWeapon(name) {
+	var s = N(name);
+	SrcStatus.MinDmg += s.itemArray[s.selectedIndex].min;
+	SrcStatus.MaxDmg += s.itemArray[s.selectedIndex].max;
+	SrcStatus['Attack Speed'] += s.itemArray[s.selectedIndex].speed;
 }
 
 function calcQLink() {
@@ -275,7 +469,9 @@ function calcQLink() {
 	addItemToQLink('Orb2');
 	addItemToQLink('Orb3');
 	addItemToQLink('Orb4');
-
+	addItemToQLink('Armor');
+	addItemToQLink('Weapon');
+	
 	var o = document.getElementsByName("Option");
 	for (var i = 0; i < o.length; i++) {
 		var s = o[i];
@@ -291,6 +487,21 @@ function addItemToQLink(name) {
 }
 
 function loadQLink() {
+	var i = document.URL.search("lv=");
+	if (i > 1) BaseStatus.Level = parseInt(document.URL.substr(i+3));
+
+	i = document.URL.search("pl=");
+	if (i > 1) BaseStatus.PointLeft = parseInt(document.URL.substr(i+3));
+
+	i = document.URL.search("s=");
+	if (i > 1) BaseStatus.BaseStr = parseInt(document.URL.substr(i+2));
+
+	i = document.URL.search("d=");
+	if (i > 1) BaseStatus.BaseDex = parseInt(document.URL.substr(i+2));
+
+	i = document.URL.search("i=");
+	if (i > 1) BaseStatus.BaseInt = parseInt(document.URL.substr(i+2));
+
 	var t = document.URL.search("c=");
 	var l = "";
 	if (t > 1) l = document.URL.substr(t+2);
@@ -310,6 +521,8 @@ function loadQLink() {
 	loadItemFromCh('Orb2', l[t++]);
 	loadItemFromCh('Orb3', l[t++]);
 	loadItemFromCh('Orb4', l[t++]);
+	loadItemFromCh('Armor', l[t++]);
+	loadItemFromCh('Weapon', l[t++]);
 
 	var o = document.getElementsByName("Option");
 	for (var i = 0; i < o.length; i++) {
@@ -363,6 +576,12 @@ function chkbrowser(){
 }
 
 function init(){
+	BaseStatus.Level = 1;
+	BaseStatus.PointLeft = 0;
+	BaseStatus.BaseStr = 20;
+	BaseStatus.BaseDex = 20;
+	BaseStatus.BaseInt = 20;
+
 	setupWidgts();
 	loadQLink();
 
@@ -381,17 +600,57 @@ function init(){
 <meta content="MSHTML 6.00.2600.0" name="GENERATOR">
 <title>Status Calculator</title></head>
 <body onload="init()">
-<div id="info">
-<div style="BACKGROUND: #cccc99" align="center">Status Calculator</div>
-<div style="BACKGROUND: #eeeeee">
+<div class="t-div">Status Calculator</div>	
+<div class="l-div">
+<div>
 <br>
 <table>
   <tbody>
   <tr>
+    <td>Level</td><td> <input class="nrl_td" maxlength="3" size="2" value="1" name="Level"> </td>
+    <td><input type="button" value=" +1 " onclick="levelAdd(1)"></td><td><input type="button" value=" -1 " onclick="levelSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="levelAdd(10)"></td><td><input type="button" value=" -10 " onclick="levelSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="levelAdd(100)"></td><td><input type="button" value=" -100 " onclick="levelSub(100)"></td>
+    <td>Points left</td><td> <input class="nrl_td" readonly="" maxlength="3" size="4" value="0" name="PointLeft"> </td>
+  </tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+  <tr>
+    <td>STR</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseStr"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealStr"> </td>
+    <td><input type="button" value=" +1 " onclick="strAdd(1)"></td><td><input type="button" value=" -1 " onclick="strSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="strAdd(10)"></td><td><input type="button" value=" -10 " onclick="strSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="strAdd(100)"></td><td><input type="button" value=" -100 " onclick="strSub(100)"></td>
+  </tr>
+  <tr>
+  	<td>DEX</td>
+  	<td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseDex"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealDex"> </td>
+    <td><input type="button" value=" +1 " onclick="dexAdd(1)"></td><td><input type="button" value=" -1 " onclick="dexSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="dexAdd(10)"></td><td><input type="button" value=" -10 " onclick="dexSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="dexAdd(100)"></td><td><input type="button" value=" -100 " onclick="dexSub(100)"></td>
+  </tr>
+  <tr>
+  	<td>INT</td>
+  	<td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="BaseInt"> </td><td>\</td>
+    <td><input class="nrl_td" readonly="" maxlength="3" size="2" value="20" name="RealInt"> </td>
+    <td><input type="button" value=" +1 " onclick="intAdd(1)"></td><td><input type="button" value=" -1 " onclick="intSub(1)"></td>
+    <td><input type="button" value=" +10 " onclick="intAdd(10)"></td><td><input type="button" value=" -10 " onclick="intSub(10)"></td>
+    <td><input type="button" value=" +100 " onclick="intAdd(100)"></td><td><input type="button" value=" -100 " onclick="intSub(100)"></td>
+  </tr>  
+  </tbody>
+</table>
+<br>
+<table>
+  <tbody>
+<!--   <tr>
     <td> STR</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Str"> </td>
     <td> DEX</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Dex"> </td>
     <td> INT</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Int"> </td>
-  </tr>
+  </tr> -->
   <tr>
     <td> Defence</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Defence"> </td>
     <td> Protection</td><td> <input class="ro_right" readonly="" maxlength="3" size="4" value="0" name="Protection"> </td>
@@ -419,85 +678,102 @@ function init(){
   </tr>
   </tbody>
 </table>
+</div><div>
 <br>
-
 <table>
 	<tbody>
-	<tr>
+	<tr class="white">
 	  <td>Necklace</td>
 	  <td><select name="Necklace1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
 	  <td>Earing</td>
 	  <td><select name="Earing1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Earing</td>
 	  <td><select name="Earing2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="l-tr"><td></td></tr>
+	<tr class="white">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>	
-	<tr>
+	<tr class="white">
 	  <td>Bracelet</td>
 	  <td><select name="Bracelet2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring3" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="gray">
 	  <td>Ring</td>
 	  <td><select name="Ring4" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="l-tr"><td></td></tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb1" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb2" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb3" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>
-	<tr>
+	<tr class="white">
 	  <td>Orb</td>
 	  <td><select name="Orb4" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr class="l-tr"><td></td></tr>
+	<tr class="gray">
+	  <td>Armor</td>
+	  <td><select name="Armor" onchange="onItemChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
+	</tr>
+	<tr class="gray">
+	  <td>Weapon</td>
+	  <td><select name="Weapon" onchange="onItemChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	  <td><select name="Option" onchange="onOptionChange(this)"></select><select class="right" onchange="onValueChange()"></select></td>
 	</tr>	
@@ -505,9 +781,30 @@ function init(){
 </table>
 </div></div>
 
-<div id="qlink">
+<div class="link-div">
 	<p>Quick Link:</p>
 	<a name="aLink"></a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=117d=195i=195c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">average vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=137d=195i=175c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">meteor vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=137d=195i=175c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">hybird vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=20d=467i=20c=GGGGGGGGGDDDDGJLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBCLEBC">dex vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=226d=261i=20c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHEBCHE">str vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=87d=210i=210c=GGGGGGGGGDDDDGJDCCEDCCEKCCEKCCEKCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCCEBCKC">int dex vamp</a>
+</div>
+<div class="link-div">
+	<a href="vsc.html?lv=150pl=0s=117d=195i=195c=GGGGGGGGGDDDDGJBCHEBCHEBCHEBCKCBCKCBCKCBCDCBCDCBCDCBCDCBCDCBCDCBCDCBCDCBCKC">Raohm set</a>
 </div>
 </body>
 </html>
